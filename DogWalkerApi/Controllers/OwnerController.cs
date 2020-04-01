@@ -36,17 +36,17 @@ namespace DogWalkerApi.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, Name, Address, NeighborhoodId, Phone FROM Owner";
+                    cmd.CommandText = "SELECT Id, DogOwnerName, DogOwnerAddress, NeighborhoodId, Phone FROM DogOwner";
                     SqlDataReader reader = cmd.ExecuteReader();
-                    List<Owner> owners = new List<Owner>();
+                    List<Owners> owners = new List<Owners>();
 
                     while (reader.Read())
                     {
-                        Owner owner = new Owner
+                        Owners owner = new Owners
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
-                            Address = reader.GetString(reader.GetOrdinal("Address")),
+                            DogOwnerName = reader.GetString(reader.GetOrdinal("DogOwnerName")),
+                            DogOwnerAddress = reader.GetString(reader.GetOrdinal("DogOwnerAddress")),
                             NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
                             Phone = reader.GetString(reader.GetOrdinal("Phone"))
                         };
@@ -70,7 +70,7 @@ namespace DogWalkerApi.Controllers
                 {
                     cmd.CommandText = @"
                         SELECT
-                            Id, Name, Address, NeighborhoodId, Phone
+                            Id, DogOwnerName, DogOwnerAddress, NeighborhoodId, Phone
                         FROM 
                             Owner
                         WHERE 
@@ -78,15 +78,15 @@ namespace DogWalkerApi.Controllers
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    Owner owner = null;
+                    Owners owner = null;
 
                     if (reader.Read())
                     {
-                        owner = new Owner
+                        owner = new Owners
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
-                            Address = reader.GetString(reader.GetOrdinal("Address")),
+                            DogOwnerName = reader.GetString(reader.GetOrdinal("DogOwnerName")),
+                            DogOwnerAddress = reader.GetString(reader.GetOrdinal("DogOwnerAddress")),
                             NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId")),
                             Phone = reader.GetString(reader.GetOrdinal("Phone"))
                         };
@@ -99,20 +99,20 @@ namespace DogWalkerApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Owner owner)
+        public async Task<IActionResult> Post([FromBody] Owners owner)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"INSERT INTO Owner (Name, Address, NeighborhoodId, Phone)
+                    cmd.CommandText = @"INSERT INTO Owner (DogOwnerName, DogOwnerAddress, NeighborhoodId, Phone)
                                         OUTPUT INSERTED.Id 
-                                        VALUES (@name, @address, @neighborhoodId, @phone)";
+                                        VALUES (@dogOwnerName, @dogOwnerAddress, @neighborhoodId, @phone)";
 
                     cmd.Parameters.Add(new SqlParameter("@id", owner.Id));
-                    cmd.Parameters.Add(new SqlParameter("@name", owner.Name));
-                    cmd.Parameters.Add(new SqlParameter("@address", owner.Address));
+                    cmd.Parameters.Add(new SqlParameter("@dogOwnerName", owner.DogOwnerName));
+                    cmd.Parameters.Add(new SqlParameter("@dogOwnerAddress", owner.DogOwnerAddress));
                     cmd.Parameters.Add(new SqlParameter("@neighborhoodId", owner.NeighborhoodId));
                     cmd.Parameters.Add(new SqlParameter("@phone", owner.Phone));
 
@@ -124,7 +124,7 @@ namespace DogWalkerApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Owner owner)
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Owners owner)
         {
             try
             {
@@ -135,12 +135,12 @@ namespace DogWalkerApi.Controllers
                     {
                         cmd.CommandText = @"
                         UPDATE Owner
-                        Set Name = @name, Address = @address, NeighborhoodId = @neighborhoodId, Phone = @phone
+                        Set DogOwnerName = @dogOwnerName, DogOwnerAddress = @dogOwnerAddress, NeighborhoodId = @neighborhoodId, Phone = @phone
                         WHERE Id = @id";
 
                         cmd.Parameters.Add(new SqlParameter("@id", owner.Id));
-                        cmd.Parameters.Add(new SqlParameter("@name", owner.Name));
-                        cmd.Parameters.Add(new SqlParameter("@address", owner.Address));
+                        cmd.Parameters.Add(new SqlParameter("@dogOwnerName", owner.DogOwnerName));
+                        cmd.Parameters.Add(new SqlParameter("@dogOwnerAddress", owner.DogOwnerAddress));
                         cmd.Parameters.Add(new SqlParameter("@neighborhoodId", owner.NeighborhoodId));
                         cmd.Parameters.Add(new SqlParameter("@phone", owner.Phone));
 

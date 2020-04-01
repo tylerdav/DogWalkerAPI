@@ -36,16 +36,16 @@ namespace DogWalkerApi.Controllers
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT Id, Name, NeighborhoodId FROM Walker";
+                    cmd.CommandText = "SELECT Id, WalkerName, NeighborhoodId FROM Walker";
                     SqlDataReader reader = cmd.ExecuteReader();
-                    List<Walker> walker = new List<Walker>();
+                    List<Walkers> walker = new List<Walkers>();
 
                     while (reader.Read())
                     {
-                        Walker walkers = new Walker
+                        Walkers walkers = new Walkers
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                            WalkerName = reader.GetString(reader.GetOrdinal("WalkerName")),
                             NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId"))
 
                         };
@@ -69,7 +69,7 @@ namespace DogWalkerApi.Controllers
                 {
                     cmd.CommandText = @"
                         SELECT
-                            Id, Name, NeighborhoodId
+                            Id, WalkerName, NeighborhoodId
                         FROM 
                             Walker
                         WHERE 
@@ -77,14 +77,14 @@ namespace DogWalkerApi.Controllers
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
-                    Walker walker = null;
+                    Walkers walker = null;
 
                     if (reader.Read())
                     {
-                        walker = new Walker
+                        walker = new Walkers
                         {
                             Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            Name = reader.GetString(reader.GetOrdinal("Name")),
+                            WalkerName = reader.GetString(reader.GetOrdinal("WalkerName")),
                             NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId"))
 
                         };
@@ -97,19 +97,19 @@ namespace DogWalkerApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] Walker walker)
+        public async Task<IActionResult> Post([FromBody] Walkers walker)
         {
             using (SqlConnection conn = Connection)
             {
                 conn.Open();
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
-                    cmd.CommandText = @"INSERT INTO Walker (Name, NeighborhoodId)
+                    cmd.CommandText = @"INSERT INTO Walker (WalkerName, NeighborhoodId)
                                         OUTPUT INSERTED.Id 
-                                        VALUES (@name, @neighborhoodId)";
+                                        VALUES (@walkerName, @neighborhoodId)";
 
                     cmd.Parameters.Add(new SqlParameter("@id", walker.Id));
-                    cmd.Parameters.Add(new SqlParameter("@name", walker.Name));
+                    cmd.Parameters.Add(new SqlParameter("@walkerName", walker.WalkerName));
                     cmd.Parameters.Add(new SqlParameter("@neighborhoodId", walker.NeighborhoodId));
 
                     int newId = (int)cmd.ExecuteScalar();
@@ -120,7 +120,7 @@ namespace DogWalkerApi.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Walker walker)
+        public async Task<IActionResult> Put([FromRoute] int id, [FromBody] Walkers walker)
         {
             try
             {
@@ -131,11 +131,11 @@ namespace DogWalkerApi.Controllers
                     {
                         cmd.CommandText = @"
                         UPDATE Walker
-                        Set Name = @name, NeighborhoodId = @neighborhoodId
+                        Set WalkerName = @walkerName, NeighborhoodId = @neighborhoodId
                         WHERE Id = @id";
 
                         cmd.Parameters.Add(new SqlParameter("@id", walker.Id));
-                        cmd.Parameters.Add(new SqlParameter("@name", walker.Name));
+                        cmd.Parameters.Add(new SqlParameter("@walkerName", walker.WalkerName));
                         cmd.Parameters.Add(new SqlParameter("@neighborhoodId", walker.NeighborhoodId));
 
                         int rowsAffected = cmd.ExecuteNonQuery();
@@ -209,7 +209,7 @@ namespace DogWalkerApi.Controllers
                 {
                     cmd.CommandText = @"
                     SELECT
-                        Id, Name, NeighborhoodId
+                        Id, WalkerName, NeighborhoodId
                         FROM
                             Walker
                         WHERE

@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 namespace DogWalkerApi.Models
 {
-    public class Walker
+    public class Walkers
     {
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string WalkerName { get; set; }
         public int NeighborhoodId { get; set; }
     }
 }

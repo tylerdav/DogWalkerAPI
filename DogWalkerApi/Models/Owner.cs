@@ -5,11 +5,11 @@ using System.Threading.Tasks;
 
 namespace DogWalkerApi.Models
 {
-    public class Owner
+    public class Owners
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Address { get; set; }
+        public string DogOwnerName { get; set; }
+        public string DogOwnerAddress { get; set; }
         public int NeighborhoodId { get; set; }
         public string Phone { get; set; }
     }
