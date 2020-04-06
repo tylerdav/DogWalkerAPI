@@ -60,7 +60,9 @@ namespace DogWalkerApi.Controllers
         }
 
         [HttpGet("{id}", Name = "GetWalker")]
-        public async Task<IActionResult> Get([FromRoute] int id)
+        public async Task<IActionResult> Get(
+            [FromRoute] int id,
+            [FromQuery] string include)
         {
             using (SqlConnection conn = Connection)
             {
@@ -68,26 +70,48 @@ namespace DogWalkerApi.Controllers
                 using (SqlCommand cmd = conn.CreateCommand())
                 {
                     cmd.CommandText = @"
-                        SELECT
-                            Id, WalkerName, NeighborhoodId
-                        FROM 
-                            Walker
-                        WHERE 
-                            Id = @id";
+                        SELECT wr.Id, wr.WalkerName, wr.NeighborhoodId";
+                    if (include == "walks")
+                    {
+                        cmd.CommandText += ", ws.Id AS WalksId, ws.WalkDate, ws.Duration, ws.DogId, ws.WalkerId ";
+                    }
+                    cmd.CommandText += "FROM Walker wr ";
+                    
+                    if(include == "walks")
+                    {
+                        cmd.CommandText += "LEFT JOIN walk ws ON wr.Id = ws.WalkerId ";
+                    }
+                    cmd.CommandText += "WHERE wr.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
                     SqlDataReader reader = cmd.ExecuteReader();
 
                     Walkers walker = null;
 
-                    if (reader.Read())
+                    while (reader.Read())
                     {
-                        walker = new Walkers
+                        if (walker == null)
                         {
-                            Id = reader.GetInt32(reader.GetOrdinal("Id")),
-                            WalkerName = reader.GetString(reader.GetOrdinal("WalkerName")),
-                            NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId"))
+                            walker = new Walkers
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("Id")),
+                                WalkerName = reader.GetString(reader.GetOrdinal("WalkerName")),
+                                NeighborhoodId = reader.GetInt32(reader.GetOrdinal("NeighborhoodId"))
+                            };
 
-                        };
+
+                        }
+
+                        if (include == "walks")
+                        {
+                            walker.Walk.Add(new Walks()
+                            {
+                                Id = reader.GetInt32(reader.GetOrdinal("WalksId")),
+                                WalkDate = reader.GetDateTime(reader.GetOrdinal("WalkDate")),
+                                Duration = reader.GetInt32(reader.GetOrdinal("Duration")),
+                                WalkerId = reader.GetInt32(reader.GetOrdinal("WalkerId")),
+                                DogId = reader.GetInt32(reader.GetOrdinal("DogId"))
+                            });
+                        }
                     }
                     reader.Close();
 
