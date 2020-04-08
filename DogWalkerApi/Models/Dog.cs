@@ -12,6 +12,7 @@ namespace DogWalkerApi.Models
         public int DogOwnerId { get; set; }
         public string Breed { get; set; }
         public string Notes { get; set; }
+        public Owners Owner { get; set; }
     }
 }
 

@@ -79,7 +79,7 @@ namespace DogWalkerApi.Controllers
                     
                     if(include == "walks")
                     {
-                        cmd.CommandText += "LEFT JOIN walk ws ON wr.Id = ws.WalkerId ";
+                        cmd.CommandText += "LEFT JOIN Walk ws ON wr.Id = ws.WalkerId ";
                     }
                     cmd.CommandText += "WHERE wr.Id = @id";
                     cmd.Parameters.Add(new SqlParameter("@id", id));
